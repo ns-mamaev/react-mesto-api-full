@@ -1,7 +1,6 @@
 class Api {
-  constructor({ baseUrl, headers }) {
+  constructor({ baseUrl }) {
     this._baseUrl = baseUrl;
-    this._headers = headers;
   }
 
   async _handleResponse(res) {
@@ -14,9 +13,7 @@ class Api {
 
   _getData(path) {
     return fetch(`${this._baseUrl}${path}`, {
-      headers: {
-        authorization: this._headers.authorization,
-      },
+      credentials: 'include',
     }).then((res) => this._handleResponse(res));
   }
 
@@ -31,8 +28,11 @@ class Api {
   _changeData(data, path) {
     return fetch(`${this._baseUrl}${path}`, {
       method: 'PATCH',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(data),
+      credentials: 'include',
     }).then((res) => this._handleResponse(res));
   }
 
@@ -47,17 +47,18 @@ class Api {
   addCard(data) {
     return fetch(`${this._baseUrl}/cards`, {
       method: 'POST',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(data),
+      credentials: 'include',
     }).then((res) => this._handleResponse(res));
   }
 
   _handleLike(method, id) {
     return fetch(`${this._baseUrl}/cards/${id}/likes`, {
       method: method,
-      headers: {
-        authorization: this._headers.authorization,
-      },
+      credentials: 'include',
     }).then((res) => this._handleResponse(res));
   }
 
@@ -68,19 +69,13 @@ class Api {
   deleteCard(id) {
     return fetch(`${this._baseUrl}/cards/${id}`, {
       method: 'DELETE',
-      headers: {
-        authorization: this._headers.authorization,
-      },
+      credentials: 'include',
     }).then((res) => this._handleResponse(res));
   }
 }
 
 const api = new Api({
-  baseUrl: 'https://localhost:3001',
-  headers: {
-    authorization: 'c057a3e7-5ee0-421c-b032-822b62f6abd9',
-    'Content-Type': 'application/json',
-  },
+  baseUrl: 'http://localhost:3001',
 });
 
 export default api;

@@ -1,4 +1,4 @@
-const BASE_URL = 'https://auth.nomoreparties.co';
+const BASE_URL = 'http://localhost:3001';
 
 const register = async (email, password) => {
   const res = await fetch(`${BASE_URL}/signup`, {
@@ -7,6 +7,7 @@ const register = async (email, password) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ email, password }),
+    credentials: 'include',
   });
   if (res.ok) {
     return await res.json();
@@ -22,25 +23,7 @@ const login = async (email, password) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ email, password }),
-  });
-  if (res.ok) {
-    const data = await res.json();
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-    }
-    return;
-  }
-  const err = await res.json();
-  return Promise.reject(err);
-};
-
-const getContent = async (token) => {
-  const res = await fetch(`${BASE_URL}/users/me`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+    credentials: 'include',
   });
   if (res.ok) {
     return await res.json();
@@ -49,4 +32,28 @@ const getContent = async (token) => {
   return Promise.reject(err);
 };
 
-export { register, login, getContent };
+const logout = async () => {
+  const res = await fetch(`${BASE_URL}/signout`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  if (res.ok) {
+    return await res.json();
+  }
+  const err = await res.json();
+  return Promise.reject(err);
+};
+
+const getContent = async () => {
+  const res = await fetch(`${BASE_URL}/users/me`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  if (res.ok) {
+    return await res.json();
+  }
+  const err = await res.json();
+  return Promise.reject(err);
+};
+
+export { register, login, logout, getContent };

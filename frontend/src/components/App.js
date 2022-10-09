@@ -151,20 +151,16 @@ function App() {
   };
 
   const tokenCheck = async () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const res = await auth.getContent(token);
-        if (res.data) {
-          setLoggedIn(true);
-          setUserProfile(res.data.email);
-          history.push('/');
-        }
-      } catch (err) {
-        setLoggedIn(false);
-        history.push('/sign-in');
-        showErrorPopup(err);
+    try {
+      const res = await auth.getContent();
+      if (res.email) {  // токен не отправляется т.к. хранится в куках
+        setLoggedIn(true);
+        setUserProfile(res.email);
+        history.push('/');
       }
+    } catch (err) {
+      setLoggedIn(false);
+      history.push('/sign-in');
     }
     setIsPageLoading(false);
   };
@@ -173,12 +169,12 @@ function App() {
     setIsRegisterLoading(true);
     auth
       .register(email, password)
-      .then((res) => {
-        setUserProfile(res.data.email);
+      .then(({ email }) => {
+        setUserProfile(email);
         setLoggedIn(true);
         history.push('/');
       })
-      .catch(({ error }) => setInfoTooltipMessage(error))
+      .catch(({ message }) => setInfoTooltipMessage(message))
       .finally(() => {
         setIsRegisterLoading(false);
         setIsInfoTooltipOpened(true);
@@ -189,7 +185,7 @@ function App() {
     setIsLoginLoading(true);
     auth
       .login(email, password)
-      .then(() => {
+      .then(({ email }) => {
         setUserProfile(email);
         setLoggedIn(true);
         history.push('/');
@@ -205,15 +201,19 @@ function App() {
   };
 
   const onSignOut = () => {
-    localStorage.removeItem('token');
-    history.push('/sign-in');
-    setLoggedIn(false);
-    setUserProfile('');
+    console.log('exit')
+    auth.logout()
+      .then(() => {
+        history.push('/sign-in');
+        setLoggedIn(false);
+        setUserProfile('');
+      })
+      .catch(showErrorPopup);
   };
 
   useEffect(() => {
     tokenCheck();
-  }, []);
+  }, [userProfile]);
 
   const loadMainContent = () => {
     if (loggedIn) {
