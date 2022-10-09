@@ -1,0 +1,12 @@
+.auth-screen {
+  max-width: 880px;
+  width: calc(100% - 96px);
+  padding: 60px 0;
+}
+
+@media screen and (max-width: 425px) {
+  .auth-screen {
+    padding: 40px 0;
+    width: calc(100% - 60px);
+  }    
+}
