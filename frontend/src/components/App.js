@@ -182,6 +182,7 @@ function App() {
   };
 
   const onLogin = ({ email, password }) => {
+    console.log(email, password)
     setIsLoginLoading(true);
     auth
       .login(email, password)
@@ -213,7 +214,7 @@ function App() {
 
   useEffect(() => {
     tokenCheck();
-  }, [userProfile]);
+  }, []);
 
   const loadMainContent = () => {
     if (loggedIn) {

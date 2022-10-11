@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3001';
+const BASE_URL = 'https://api.mesto.nsmamaev.nomoredomains.icu';
 
 const register = async (email, password) => {
   const res = await fetch(`${BASE_URL}/signup`, {
