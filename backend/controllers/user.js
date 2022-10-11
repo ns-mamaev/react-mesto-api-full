@@ -4,7 +4,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/notFoundError');
 const ConflictError = require('../errors/conflictError');
 const BadRequestError = require('../errors/badRequestError');
-const { JWT_SECRET } = require('../utills/constants');
+const { getJWTSecretKey } = require('../utills/utills');
 
 module.exports.getUsers = (_, res, next) => {
   User.find({}).select('+email')
@@ -30,11 +30,12 @@ module.exports.getUser = (req, res, next) => {
 };
 
 const createTokenById = (id) => {
-  return jwt.sign({ _id: id }, JWT_SECRET, { expiresIn: '7d' });
-}
+  const secretKey = getJWTSecretKey();
+  return jwt.sign({ _id: id }, secretKey, { expiresIn: '7d' });
+};
 
-const sendCookie = (res, { _id : id, email }) => {
-  const token = createTokenById(id)
+const sendCookie = (res, { _id: id, email }) => {
+  const token = createTokenById(id);
   return res
     .cookie('token', token, {
       maxAge: 604800000,
@@ -42,16 +43,13 @@ const sendCookie = (res, { _id : id, email }) => {
       sameSite: true,
     })
     .send({ email });
-
-}
+};
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      console.log(user);
-      sendCookie(res, user)
+      sendCookie(res, user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -83,8 +81,8 @@ module.exports.createUser = async (req, res, next) => {
       email,
       password: hash,
     });
-    res.status(201)
-    sendCookie(res, newUser) // устанавливаю куки и при регистрации, чтобы не вводить логин
+    res.status(201);
+    sendCookie(res, newUser); // устанавливаю куки и при регистрации, чтобы не вводить логин
   } catch (err) {
     if (err.code === 11000) {
       next(new ConflictError('Пользователь с данным email уже существует'));
