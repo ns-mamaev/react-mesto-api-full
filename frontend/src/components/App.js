@@ -182,7 +182,6 @@ function App() {
   };
 
   const onLogin = ({ email, password }) => {
-    console.log(email, password)
     setIsLoginLoading(true);
     auth
       .login(email, password)
@@ -202,7 +201,6 @@ function App() {
   };
 
   const onSignOut = () => {
-    console.log('exit')
     auth.logout()
       .then(() => {
         history.push('/sign-in');
